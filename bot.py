@@ -31,7 +31,7 @@ router = Router()
 dp.include_router(router)
 
 # Инициализация OpenAI
-openai_client = OpenAI(api_key=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)
+openai_client = OpenAI(api_key="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")
 
 # Обработка входящих сообщений
 @router.message()

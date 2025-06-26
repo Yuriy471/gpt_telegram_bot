@@ -1,11 +1,13 @@
+import os
 import logging
 import asyncio
+import threading
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from openai import OpenAI
-from dotenv import load_dotenv
-import os
 
 # Загрузка переменных окружения
 load_dotenv()
@@ -15,9 +17,9 @@ logging.basicConfig(level=logging.INFO)
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# Проверка переменных
+# Проверка на ошибки
 if TELEGRAM_BOT_TOKEN is None or OPENAI_API_KEY is None:
-    raise ValueError("❌ Проверь .env файл: отсутствуют TELEGRAM_BOT_TOKEN или OPENAI_API_KEY")
+    raise ValueError("❌ Проверь, что переменные TELEGRAM_BOT_TOKEN и OPENAI_API_KEY указаны в .env!")
 
 # Инициализация бота
 bot = Bot(
@@ -28,10 +30,10 @@ dp = Dispatcher()
 router = Router()
 dp.include_router(router)
 
-# Инициализация OpenAI
+# Инициализация OpenAI клиента
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
-# Обработка сообщений
+# Обработчик сообщений
 @router.message()
 async def handle_message(message: types.Message):
     try:
@@ -48,9 +50,21 @@ async def handle_message(message: types.Message):
         logging.error(f"Ошибка GPT: {e}", exc_info=True)
         await message.answer(f"⚠️ Ошибка: {e}")
 
-# Запуск
+# HTTP-сервер для Render (порт 8080)
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is running")
+
+def run_healthcheck_server():
+    server = HTTPServer(('0.0.0.0', 8080), HealthCheckHandler)
+    server.serve_forever()
+
+# Асинхронный запуск
 async def main():
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
+    threading.Thread(target=run_healthcheck_server, daemon=True).start()
     asyncio.run(main())

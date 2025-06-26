@@ -1,5 +1,5 @@
-                services:
-  - type: worker  # <-- Было "web", стало "worker"
+services:
+  - type: web
     name: aiobot
     env: python
     pythonVersion: 3.11

@@ -11,8 +11,8 @@ from openai import OpenAI
 load_dotenv()
 
 # Получение токенов
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+TELEGRAM_BOT_TOKEN = 7761613384:AAHuAV0zOrC3ToRMOij3BCgpjUnrV55ZeXA
+OPENAI_API_KEY = sk-proj-VPjdYghZByQKApvv-GgisgUa0gPJtxlSkm90J5KfLBEy5R_FyVC-V0SkuRAo0_mCz6TBKm4jQWT3BlbkFJ83JPnb1hOW47moRlzIqyPHWJoPgaHokjvFDEJbjWNNXtfDrfAreunPgBdbbQL
 
 # Проверка токенов
 if not TELEGRAM_BOT_TOKEN or not OPENAI_API_KEY:

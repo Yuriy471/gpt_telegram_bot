@@ -1,27 +1,27 @@
-import os
 import logging
 import asyncio
-import threading
-from dotenv import load_dotenv
+import os
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from dotenv import load_dotenv
 from openai import OpenAI
 
 # Загрузка переменных окружения
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
-
+# Получение токенов
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# Проверка на ошибки
-if TELEGRAM_BOT_TOKEN is None or OPENAI_API_KEY is None:
-    raise ValueError("❌ Проверь, что переменные TELEGRAM_BOT_TOKEN и OPENAI_API_KEY указаны в .env!")
+# Проверка токенов
+if not TELEGRAM_BOT_TOKEN or not OPENAI_API_KEY:
+    raise ValueError("❌ Переменные TELEGRAM_BOT_TOKEN и OPENAI_API_KEY не найдены. Проверь .env или Render → Environment.")
 
-# Инициализация бота
+# Логирование
+logging.basicConfig(level=logging.INFO)
+
+# Настройка Telegram бота
 bot = Bot(
     token=TELEGRAM_BOT_TOKEN,
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
@@ -30,10 +30,10 @@ dp = Dispatcher()
 router = Router()
 dp.include_router(router)
 
-# Инициализация OpenAI клиента
+# Инициализация OpenAI
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
-# Обработчик сообщений
+# Обработка входящих сообщений
 @router.message()
 async def handle_message(message: types.Message):
     try:
@@ -50,21 +50,9 @@ async def handle_message(message: types.Message):
         logging.error(f"Ошибка GPT: {e}", exc_info=True)
         await message.answer(f"⚠️ Ошибка: {e}")
 
-# HTTP-сервер для Render (порт 8080)
-class HealthCheckHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is running")
-
-def run_healthcheck_server():
-    server = HTTPServer(('0.0.0.0', 8080), HealthCheckHandler)
-    server.serve_forever()
-
-# Асинхронный запуск
+# Запуск бота
 async def main():
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    threading.Thread(target=run_healthcheck_server, daemon=True).start()
     asyncio.run(main())

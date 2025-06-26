@@ -1,11 +1,9 @@
-services:
-  - type: web
+                services:
+  - type: worker  # <-- Было "web", стало "worker"
     name: aiobot
     env: python
     pythonVersion: 3.11
     buildCommand: |
-      python --version
-      pip --version
       pip install -r requirements.txt
     startCommand: python bot.py
     envVars:

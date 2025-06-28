@@ -12,7 +12,7 @@ load_dotenv()
 
 # Получение токенов
 TELEGRAM_BOT_TOKEN = "7761613384:AAHuAV0zOrC3ToRMOij3BCgpjUnrV55ZeXA"
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "sk-proj-PUKzd4oVOSgIUM08ierrPVd701l3JxIRurzP11tZr2Np-0I9cTupOVQcEIQuGSIlTGJ-NMhMGeT3BlbkFJgLWvRDHqNxCKXz2JxYCZpzVX59XVRQJe7IUMkk1oQtM2oQhJUKVDYouR-iNJV2k2gkG4_ruSsA"
 
 # Проверка токенов
 if not TELEGRAM_BOT_TOKEN or not OPENAI_API_KEY:
@@ -31,7 +31,7 @@ router = Router()
 dp.include_router(router)
 
 # Инициализация OpenAI
-openai_client = OpenAI(api_key="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")
+openai_client = OpenAI(api_key="sk-proj-PUKzd4oVOSgIUM08ierrPVd701l3JxIRurzP11tZr2Np-0I9cTupOVQcEIQuGSIlTGJ-NMhMGeT3BlbkFJgLWvRDHqNxCKXz2JxYCZpzVX59XVRQJe7IUMkk1oQtM2oQhJUKVDYouR-iNJV2k2gkG4_ruSsA")
 
 # Обработка входящих сообщений
 @router.message()
